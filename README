@@ -1,0 +1,18 @@
+### Steps to Run the App: Pretty easy, in XCode, simply hit the run button, or select "Run" from the project menu
+
+### Focus Areas: What specific areas of the project did you prioritize? Why did you choose to focus on these areas?
+    I would say I prioritized user experience mostly. I wouldn't say I spent an inordinate amount of time on any one aspect, but, in terms of time spent on the drawing board, I thought most about how to make this feel like a real, usable app despite its simplicity. I was able to leverage Swift's async/await and observer patterns to leverage concurrency for network calls. The majority of the time, given the size of payloads involved and modern network speeds, the effect will be minimal, but there are definitely times where it contributes to a smoother UX.
+
+### Time Spent: Approximately how long did you spend working on this project? How did you allocate your time?
+    In terms of actual coding time, I probably spent about 7-8 hours on it. In terms of time spent thinking about it, that is harder to estimate. When working on a blank-slate project like this, I like to work in shorter bursts, as I frequently find that, when coming back to my code, I find obvious solutions that were blocked when I was locked in on one idea, or have had a completely different idea about how to accomplish the same goal. I know the document said it would take approximately 4-5 hours, but if that's the case for your devs, I would be even more eager to work with them, as I have never found building an app from scratch to be a half-day project.
+
+### Trade-offs and Decisions: Did you make any significant trade-offs in your approach?
+    With SwiftUI's list, I was able to leverage its lazy loading to minimize network usage, however, it does include loading images for a few cells that are off-screen in order to keep UX as smooth as possible. Even with this, my benchmarking shows very minimal network usage, and none once the user has scrolled through, until they enlarge a specific recipe.
+
+### Weakest Part of the Project: What do you think is the weakest part of your project?
+    The overall design isn't where I would want it in a "production app." It is high-performance as is, but given more time, I would like to build in a lot more features. In particular, if the data were expanded to include ingredient lists, filtering by recipes that include certain ingredients, or that don't have others. I would also make it a multi-screen app so the user has a more immersive experience. Maybe leading them through choices like "Do you want something sweet or savory?" and "Fruity or chocolatey?" in order to guide new users/chefs to things that would be more personalized.
+
+### External Code and Dependencies: Did you use any external code, libraries, or dependencies? No.
+
+### Additional Information: Is there anything else we should know? Feel free to share any insights or constraints you encountered.
+    
