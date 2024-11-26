@@ -29,9 +29,6 @@ class APIClient {
         do {
             let (data, _) = try await session.data(from: url)
             let recipeList = try JSONDecoder().decode(RecipeList.self, from: data)
-            for recipe in recipeList.recipes where recipe.youtube_url == nil {
-                print(recipe.name)
-            }
             return recipeList
         } catch {
             throw URLError.invalidResponse

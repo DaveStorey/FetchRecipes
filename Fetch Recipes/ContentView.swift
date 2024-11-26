@@ -10,16 +10,11 @@ import CoreData
 import Combine
 
 struct ContentView: View {
-    @Environment(\.managedObjectContext) private var viewContext
     @State private var recipes: [Recipe] = []
     @State private var filterConditions = FilterConditions()
     @State private var filterPopup = false
     @State private var errorPopup: Bool = false
     @State private var errorMessage: String? = nil
-    @FetchRequest(
-        sortDescriptors: [NSSortDescriptor(keyPath: \Item.timestamp, ascending: true)],
-        animation: .default)
-    private var items: FetchedResults<Item>
     
     var body: some View {
         NavigationStack {
@@ -71,6 +66,8 @@ struct ContentView: View {
                 } catch(let error) {
                     self.recipes = []
                     errorPopup = true
+                    /* Sampling since errors are relatively controlled here. In a real production app there would be
+                     a more robust system developed in consultation with business and customer support reps*/
                     errorMessage = {
                         switch error {
                         case URLError.invalidURL: return "Invalid URL, please contact our support with error code 1"
@@ -111,12 +108,15 @@ struct RecipesView: View {
     }
 }
 
-// Popover view for filtering recipes by cuisine. Could be expanded to include filtering by ingredients or availability of recipe source.
+// Popover view for filtering recipes by cuisine and availability of additional materials. Could be expanded to include filtering by ingredients or taste profiles.
 struct FilterView: View {
     @Binding var filterConditions: FilterConditions
     @Binding var filterPop: Bool
     
     var body: some View {
+        
+        // Experimented with the multi-select functionality for List here, but the edit mode seems to have some bugs
+        // so I went homebrew.
         List() {
             Section(header: Text("Filter by Additional Materials")) {
                 ForEach(FilterConditions.AdditionalMaterials.allCases) { additionalMaterials in
@@ -174,6 +174,9 @@ struct FilterView: View {
 struct RecipeView: View {
     let recipe: Recipe
     @State var isExpanded: Bool = false
+    // Interesting SwiftUI wrinkle here: the @State wrapper doesn't update the view when the images are pulled down.
+    // Good example of some of the issues with Apple's rollout strategies on SwiftUI. I've run into this a number
+    // of times, particularly in MVVM architecture.
     @ObservedObject var dataStore: ListItemDataStore
     
     init(recipe: Recipe) {
@@ -183,6 +186,11 @@ struct RecipeView: View {
     
     @ViewBuilder
     var body: some View {
+        
+        // Again some constraints of working with SwiftUI. Expanding the cells programmatically with animation
+        // interfered with the link gesture recognizers. This could be worked around with UIKit (I did a similar expandable
+        // custome cell a few years ago), but I figured that a mixed UIKit/SwiftUI app didn't make sense here, and the
+        // DisclosureGroup functionality works quite well.
         DisclosureGroup(isExpanded: $isExpanded, content: {
             ZStack {
                 dataStore.largeImage.resizable(resizingMode: .stretch)
@@ -216,6 +224,9 @@ struct RecipeView: View {
     }
 }
 
+
+// Using a class-based data store allows for better async functionality and local data storage of the images that persists
+// after the views themselves would have been recycled.
 class ListItemDataStore: ObservableObject {
     @Published fileprivate var recipe: Recipe
     @Published fileprivate var smallImage: Image
