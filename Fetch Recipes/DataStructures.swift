@@ -5,8 +5,6 @@
 //  Created by David Storey on 11/22/24.
 //
 
-
-
 struct Recipe: Codable, Identifiable, Equatable {
     let cuisine: String
     let name: String

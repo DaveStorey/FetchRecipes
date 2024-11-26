@@ -7,6 +7,8 @@
 
 import CoreData
 
+
+// Unaltered from auto-generated state, since the app doesn't currently use persistence
 struct PersistenceController {
     static let shared = PersistenceController()
 
