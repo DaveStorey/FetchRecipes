@@ -16,9 +16,11 @@ struct RecipesView: View {
         if recipes.isEmpty {
             Text("No recipes found")
         } else {
-            List(recipes.filter({ recipe in filterConditions.checkRecipe(recipe) })
+            List(recipes.filter({ recipe in
+                filterConditions.checkRecipe(recipe)
+            })
             ) { recipe in
-                RecipeView(recipe: recipe)
+                RecipeView(recipe: recipe, dataStore: ListItemDataStore(recipe: recipe))
             }
         }
     }

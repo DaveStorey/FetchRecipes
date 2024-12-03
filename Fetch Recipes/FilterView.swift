@@ -13,59 +13,89 @@ struct FilterView: View {
     @Binding var filterPop: Bool
     
     var body: some View {
-        
-        // Experimented with the multi-select functionality for List here, but the edit mode seems to have some bugs
-        // so I went homebrew.
-        List() {
-            Section(header: Text("Filter by Additional Materials")) {
-                ForEach(FilterConditions.AdditionalMaterials.allCases) { additionalMaterials in
-                    LazyHStack {
-                        Text(additionalMaterials.displayName)
-                        if filterConditions.additionalMaterials.contains(additionalMaterials) {
-                            Image(systemName: "checkmark.circle.fill")
-                        }
-                    }.onTapGesture {
-                        if filterConditions.additionalMaterials.contains(additionalMaterials) {
-                            filterConditions.additionalMaterials.removeAll(where: { $0 == additionalMaterials })
-                        } else {
-                            filterConditions.additionalMaterials.append(additionalMaterials)
-                        }
+        NavigationView {
+            Form {
+                // Your existing filter sections go here
+                Section(header: Text("Filter by Additional Materials")) {
+                    ForEach(FilterConditions.AdditionalMaterials.allCases, id: \.self) { additionalMaterials in
+                        FilterRow(
+                            title: additionalMaterials.displayName,
+                            isSelected: filterConditions.additionalMaterials.contains(additionalMaterials),
+                            onTap: {
+                                toggleSelection(for: additionalMaterials, in: &filterConditions.additionalMaterials)
+                            }
+                        )
                     }
                 }
-            }
-        }
-        .frame(height: 200)
-        
-        List() {
-            Section(header: Text("Filter by Cuisine")) {
-                ForEach(Cuisines.allCases) { cuisine in
-                    LazyHStack {
-                        Text(cuisine.rawValue)
-                        if filterConditions.cuisines.contains(cuisine) {
-                            Image(systemName: "checkmark.circle.fill")
-                        }
-                    }.onTapGesture {
-                        if filterConditions.cuisines.contains(cuisine) {
-                            filterConditions.cuisines.removeAll(where: { $0 == cuisine })
-                        } else {
-                            filterConditions.cuisines.append(cuisine)
-                        }
+                
+                Section(header: Text("Filter by Cuisine")) {
+                    ForEach(Cuisines.allCases, id: \.self) { cuisine in
+                        FilterRow(
+                            title: cuisine.rawValue,
+                            isSelected: filterConditions.cuisines.contains(cuisine),
+                            onTap: {
+                                toggleSelection(for: cuisine, in: &filterConditions.cuisines)
+                            }
+                        )
                     }
                 }
+                
+                Section {
+                    HStack {
+                        Button("Done") {
+                            filterPop.toggle() // Close the filter view
+                        }
+                        .frame(width: 100, height: 45)
+                        .background(Color.blue)
+                        .foregroundColor(.white)
+                        .cornerRadius(10)
+                        
+                        Button("Clear All") {
+                            filterConditions.cuisines.removeAll()
+                            filterConditions.additionalMaterials.removeAll()
+                        }
+                        .frame(width: 100, height: 45)
+                        .background(Color.red)
+                        .foregroundColor(.white)
+                        .cornerRadius(10)
+                    }
+                    .frame(maxWidth: .infinity)
+                }
             }
-        }
-            
-        LazyHStack {
-            Button("Done", action: { filterPop.toggle() })
-                .frame(width: 100, height: 45)
-                .cornerRadius(2.5)
-            Button("Clear all", action: {
-                filterConditions.cuisines.removeAll()
-                filterConditions.additionalMaterials.removeAll()
+            .navigationTitle("Filter Recipes")
+            .navigationBarItems(trailing: Button("Close") {
+                filterPop.toggle()
             })
-                .frame(width: 100, height: 45)
-                .cornerRadius(2.5)
         }
-        .frame(height: 50)
+    }
+    
+    // Helper method to toggle selection in a list
+    private func toggleSelection<T: Equatable>(for item: T, in list: inout [T]) {
+        if list.contains(item) {
+            list.removeAll { $0 == item }
+        } else {
+            list.append(item)
+        }
+    }
+}
+
+struct FilterRow: View {
+    let title: String
+    let isSelected: Bool
+    let onTap: () -> Void
+    
+    var body: some View {
+        HStack {
+            Text(title)
+            Spacer()
+            if isSelected {
+                Image(systemName: "checkmark.circle.fill")
+                    .foregroundColor(.blue)
+            }
+        }
+        .contentShape(Rectangle()) // Make the entire row tappable
+        .onTapGesture {
+            onTap()
+        }
     }
 }

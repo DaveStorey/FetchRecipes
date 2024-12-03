@@ -11,7 +11,7 @@ import Combine
 
 struct ContentView: View {
     @State private var recipes: [Recipe] = []
-    @State private var filterConditions = FilterConditions()
+    @State var filterConditions = FilterConditions()
     @State private var filterPopup = false
     @State private var errorPopup: Bool = false
     @State private var errorMessage: String? = nil

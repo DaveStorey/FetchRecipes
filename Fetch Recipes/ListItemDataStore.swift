@@ -25,6 +25,7 @@ class ListItemDataStore: ObservableObject {
         }
     }
         
+    @MainActor
     func fetchSmallImage() async {
         guard let urlString = recipe.photo_url_small, let url = URL(string: urlString) else {
              return
@@ -41,8 +42,9 @@ class ListItemDataStore: ObservableObject {
         task.resume()
     }
     
+    @MainActor
     func fetchLargeImage() async {
-        guard let urlString = recipe.photo_url_large, let url = URL(string: urlString) else {
+        guard largeImage == Image(systemName: "photo"), let urlString = recipe.photo_url_large, let url = URL(string: urlString) else {
              return
         }
         let task = URLSession.shared.dataTask(with: url) { [weak self] data, _, error in
