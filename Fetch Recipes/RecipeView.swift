@@ -17,7 +17,7 @@ struct RecipeView: View {
         LazyVStack(alignment: .leading) {
                 // The expandable cell header (the part that shows when collapsed)
                 HStack {
-                    dataStore.smallImage // Placeholder for small image
+                    dataStore.smallImage
                         .resizable()
                         .frame(width: 45, height: 45)
                         .cornerRadius(5)
@@ -28,7 +28,6 @@ struct RecipeView: View {
                     Spacer()
                 }
                 .padding()
-                //.background(Color.gray.opacity(0.1))
                 .cornerRadius(8)
                 .onTapGesture {
                     withAnimation {
@@ -39,7 +38,7 @@ struct RecipeView: View {
                     }
                 }
                 
-                // The expandable content, only visible when isExpanded is true
+                // The expanded content
                 if isExpanded {
                     VStack(alignment: .leading, spacing: 10) {
                         ZStack {
@@ -69,7 +68,6 @@ struct RecipeView: View {
                         }
                     }
                     .padding()
-                    //.transition(.slide) // Add a slide transition for smooth expansion
                 }
             }
             .padding(.vertical)

@@ -38,9 +38,7 @@ struct ContentView: View {
             }
         }
         .popover(isPresented: $filterPopup, content: {
-            FilterView(
-                filterConditions: $filterConditions,
-                filterPop: $filterPopup)
+            FilterView(filterConditions: $filterConditions)
         })
         .alert(
             "Error",

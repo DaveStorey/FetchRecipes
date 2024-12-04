@@ -10,19 +10,18 @@ import SwiftUI
 /// Popover view for filtering recipes by cuisine and availability of additional materials. Could be expanded to include filtering by ingredients or taste profiles.
 struct FilterView: View {
     @Binding var filterConditions: FilterConditions
-    @Binding var filterPop: Bool
+    @Environment(\.dismiss) var dismiss
     
     var body: some View {
         NavigationView {
             Form {
-                // Your existing filter sections go here
                 Section(header: Text("Filter by Additional Materials")) {
                     ForEach(FilterConditions.AdditionalMaterials.allCases, id: \.self) { additionalMaterials in
                         FilterRow(
                             title: additionalMaterials.displayName,
                             isSelected: filterConditions.additionalMaterials.contains(additionalMaterials),
                             onTap: {
-                                toggleSelection(for: additionalMaterials, in: &filterConditions.additionalMaterials)
+                                toggleItem(for: additionalMaterials)
                             }
                         )
                     }
@@ -34,47 +33,33 @@ struct FilterView: View {
                             title: cuisine.rawValue,
                             isSelected: filterConditions.cuisines.contains(cuisine),
                             onTap: {
-                                toggleSelection(for: cuisine, in: &filterConditions.cuisines)
+                                toggleItem(for: cuisine)
                             }
                         )
                     }
                 }
-                
-                Section {
-                    HStack {
-                        Button("Done") {
-                            filterPop.toggle() // Close the filter view
-                        }
-                        .frame(width: 100, height: 45)
-                        .background(Color.blue)
-                        .foregroundColor(.white)
-                        .cornerRadius(10)
-                        
-                        Button("Clear All") {
-                            filterConditions.cuisines.removeAll()
-                            filterConditions.additionalMaterials.removeAll()
-                        }
-                        .frame(width: 100, height: 45)
-                        .background(Color.red)
-                        .foregroundColor(.white)
-                        .cornerRadius(10)
-                    }
-                    .frame(maxWidth: .infinity)
-                }
             }
             .navigationTitle("Filter Recipes")
             .navigationBarItems(trailing: Button("Close") {
-                filterPop.toggle()
+                dismiss()
             })
         }
     }
     
-    // Helper method to toggle selection in a list
-    private func toggleSelection<T: Equatable>(for item: T, in list: inout [T]) {
-        if list.contains(item) {
-            list.removeAll { $0 == item }
-        } else {
-            list.append(item)
+    // Helper method to toggle selection
+    private func toggleItem<T: Equatable>(for cuisine: T) {
+        if let material = cuisine as? FilterConditions.AdditionalMaterials {
+            if filterConditions.additionalMaterials.contains(where: { $0 == material}) {
+                filterConditions.additionalMaterials.removeAll(where: { $0 == material })
+            } else {
+                filterConditions.additionalMaterials.append(material)
+            }
+        } else if let cuisine = cuisine as? Cuisines {
+            if filterConditions.cuisines.contains(where: { $0 == cuisine }) {
+                filterConditions.cuisines.removeAll { $0 == cuisine }
+            } else {
+                filterConditions.cuisines.append(cuisine)
+            }
         }
     }
 }
@@ -93,7 +78,7 @@ struct FilterRow: View {
                     .foregroundColor(.blue)
             }
         }
-        .contentShape(Rectangle()) // Make the entire row tappable
+        .contentShape(Rectangle())
         .onTapGesture {
             onTap()
         }
